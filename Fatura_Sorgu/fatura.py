@@ -330,7 +330,7 @@ musteriler = [
 
             {"fatura_no": "F10141", "tur": "Elektrik", "tutar": 495.50, "son_odeme": "2026-09-29", "odendi": False}, 
 
-            {"fatura_no": "F10142", "tur": "İnternet", "tutar": 315.00, "son_odeme": "2026-10-28", "odendi": True} 
+            {"fatura_no": "F10142", "tur": "İnternet", "tutar": 315.00, "son_odeme": "2026-10-28", "odendi": False} 
 
         ] 
 
@@ -408,7 +408,7 @@ musteriler = [
 
         "faturalar": [ 
 
-            {"fatura_no": "F10151", "tur": "Doğalgaz", "tutar": 815.50, "son_odeme": "2026-10-06", "odendi": False}, 
+            {"fatura_no": "F10151", "tur": "Doğalgaz", "tutar": 815.50, "son_odeme": "2025-5-06", "odendi": False}, 
 
             {"fatura_no": "F10152", "tur": "İnternet", "tutar": 330.00, "son_odeme": "2026-11-10", "odendi": True} 
 
@@ -499,18 +499,47 @@ while True:
 
   secim = input("Lütfen Yapmak İstediğiniz İşlemi Seçiniz: ")
 
-  # -------1. Soru Başlangıç---------
+  # -------1. Soru Ve 11.Soru Başlangıç---------
   if secim == "1":
-    girilen_musteri_numarasi = input("Müşteri Numarasını Giriniz: ")
-    bulundu = False
-    for musteri in musteriler:
-      if musteri["musteri_no"] == girilen_musteri_numarasi:
-        print(f"Müşteri Numarası: {musteri['musteri_no']} - Adı: {musteri['ad']}")
-        bulundu = True
-        break
-    if not bulundu:
-      print("Müşteri Bulunamadı.")
-  # -------1. Soru Bitiş---------
+    giris_tipi=input("Müşteri Numarasıylamı Giriş Yapmak İstersiniz Yoksa Fatura Numarasıylamı(M/F)").upper()
+    bulundu=False
+    if giris_tipi=="M":
+      girilen_musteri_numarasi = input("Müşteri Numarasını Giriniz: ")
+      for musteri in musteriler:
+          if musteri["musteri_no"] == girilen_musteri_numarasi:
+             print(f"Müşteri Numarası: {musteri['musteri_no']} - Adı: {musteri['ad']}")
+             bulundu = True
+             break
+      if not bulundu:
+        print("Müşteri Bulunamadı")
+    elif giris_tipi=="F":
+      girilen_fatura_numarasi=input("Fatura Numarasını Giriniz: ")
+      for musteri in musteriler:
+        for fatura in musteri["faturalar"]:
+          if fatura["fatura_no"]==girilen_fatura_numarasi:
+            bulundu=True
+            if fatura["odendi"]:
+              odeme_durumu="Ödendi"
+            else:
+              odeme_durumu="Ödenmemiş" 
+
+            print(f"\n--- Fatura Bilgileri ---")
+            print(f"Müşteri Adı: {musteri['ad']}")
+            print(f"Müşteri Numarası: {musteri['musteri_no']}")
+            print(f"Fatura Numarası: {fatura['fatura_no']}")
+            print(f"Fatura Türü: {fatura['tur']}")
+            print(f"Tutar: {fatura['tutar']} TL")
+            print(f"Son Ödeme Tarihi: {fatura['son_odeme']}")
+            print(f"Ödeme Durumu: {odeme_durumu}")
+            break
+        if bulundu:
+          break
+
+      if not bulundu:
+        print("Fatura Bulunamadı.")
+    else:
+      print("Geçersiz seçim yaptınız! Lütfen M veya F giriniz.") 
+  # -------1. Soru Ve 11.Soru  Bitiş---------
 
   # -------2. Soru Başlangıç---------
   elif secim == "2":
@@ -555,23 +584,34 @@ while True:
       print("Müşteri Bulunamadı.")
   # -------3. Soru Bitiş---------
 
-  # -------4. Soru Başlangıç---------
+  # -------4. Soru ve 10. Soru Başlangıç---------
   elif secim=="4":
-    girilen_musteri_numarasi=input("Müşteri Numarasını Giriniz: ")
-    bulundu=False
-    toplam_borc=0.0
+    girilen_musteri_numarasi = input("Müşteri Numarasını Giriniz: ")
+    bulundu = False
+    toplam_borc = 0.0
+    gecikmis_borc = 0.0
+    BUGUN = "2026-10-28"
+
     for musteri in musteriler:
-      if musteri["musteri_no"]==girilen_musteri_numarasi:
-        bulundu=True
+      if musteri["musteri_no"] == girilen_musteri_numarasi:
+        bulundu = True
         for fatura in musteri["faturalar"]:
           if not fatura["odendi"]:
-            toplam_borc+=fatura['tutar']
-        print(f"Müşteri{musteri['ad']}-Toplam Ödenmemiş Borçlarınız: {toplam_borc}TL")
+            toplam_borc += fatura["tutar"]
+            if fatura["son_odeme"] < BUGUN:
+              gecikmis_borc += fatura["tutar"]
+
+        print(f"\nMüşteri: {musteri['ad']} - Toplam Ödenmemiş Borcunuz: {toplam_borc} TL")
+        if gecikmis_borc > 0:
+          print(f"Gecikmiş Toplam Borcunuz: {gecikmis_borc} TL")
+        else:
+          print("Gecikmiş borcunuz bulunmamaktadır.")
+        print("-" * 30)
         break
     if not bulundu:
       print("Müşteri Bulunamadı")
-  # -------4. Soru Bitiş---------
-  # -------5. Soru Başlangıç---------
+  # -------4. Soru Ve 10. Soru Bitiş---------
+  # -------5. Soru Ve 6. Soru Başlangıç---------
   elif secim=="5":
     girilen_musteri_numarasi=input("Müşteri Numarasını Giriniz: ")
     girilen_fatura_numarasi=input("Fatura Numarasını Giriniz: ")
@@ -588,20 +628,18 @@ while True:
             else:
               fatura["odendi"]=True
               print(f"Fatura başarıyla ödendi! Fatura No: {fatura['fatura_no']}")
-              # -------6. Soru Başlangıç---------
               guncel_borc=0
               for odeme_sonrasi_borc in musteri["faturalar"]:
                 if not odeme_sonrasi_borc["odendi"]:
                   guncel_borc+=odeme_sonrasi_borc["tutar"]
               print(f"Müşterinin Güncel Toplam Borcu: {guncel_borc} TL") 
-              # -------6. Soru Bitiş---------
             break
     if not bulundu:
       print("Müşteri Bulunamadı")
     if not fatura_bulundu:
       print("Fatura Bulunamadı")
-  # -------5. Soru Bitiş---------
-  # -------7. Soru Başlangıç---------
+  # -------5. Soru Ve 6. SoruBitiş---------
+  # -------9. Soru Başlangıç---------
   elif secim=="6":
     girilen_musteri_numarasi = input("Müşteri Numarasını Giriniz: ") 
     bulundu = False
@@ -623,29 +661,131 @@ while True:
           print("Gecikmiş Faturanız Bulunmuyor")
     if not bulundu:
       print("Müşteri Bulunamadı")
-  # -------7. Soru Bitiş---------
-  # -------8. Soru Başlangıç---------
+  # -------9. Soru Bitiş---------
+  # -------7. Soru Ve 12. Soru Başlangıç---------
   elif secim =="7":
-    girilen_musteri_numarasi=input("Müşteri Numarası Giriniz: ")
-    girilen_tur=input("Lütfen Fatura Türünü Giriniz: ")
+    giris_tipi=input("Müşteri Numarasıylamı Giriş Yapmak İstersiniz Yoksa Fatura Numarasıylamı(M/F)").upper()
     bulundu=False
     fatura_bulundu=False
-    for musteri in musteriler:
-      if musteri["musteri_no"]==girilen_musteri_numarasi:
-        bulundu=True
+    if giris_tipi=="M":
+      girilen_musteri_numarasi=input("Müşteri Numarası Giriniz: ")
+      girilen_tur=input("Fatura Türünü Giriniz: ")
+      for musteri in musteriler:
+        if musteri["musteri_no"]==girilen_musteri_numarasi:
+          bulundu=True
+          for fatura in musteri["faturalar"]:
+            if fatura["tur"]==girilen_tur:
+              fatura_bulundu=True
+              print(f"Fatura No: {fatura['fatura_no']} - Tutar {fatura['tutar']}TL - Son Ödeme {fatura['son_odeme']}")
+          if not fatura_bulundu:
+            print("Bu Müşteriye Ait Fatura Bulunamadı")
+      if not bulundu:
+       print("Müşteri Bulunamadı")
+    elif giris_tipi == "F":
+      girilen_fatura_numarasi = input("Fatura Numarasını Giriniz: ")
+      fatura_bulundu = False
+      for musteri in musteriler:
         for fatura in musteri["faturalar"]:
-          if fatura["tur"]==girilen_tur:
-            fatura_bulundu=True
-            print(f"Fatura No: {fatura['fatura_no']} - Tutar {fatura['tutar']}TL - Son Ödeme {fatura['son_odeme']}")
-        if not fatura_bulundu:
-          print(f"Bu müşteriye ait {girilen_tur} türünde fatura bulunamadı.")
+          if fatura["fatura_no"] == girilen_fatura_numarasi:
+            fatura_bulundu = True
+            if fatura["odendi"]:
+              print("Bu Fatura Ödenmiş")
+            else:
+              print(f"Ödenmemiş Fatura: {fatura["tur"]}")
+            break
+        if fatura_bulundu:
+          break
+
+      if not fatura_bulundu:
+        print("Fatura Bulunamadı")
+
+  # -------7. Soru Ve 12. Soru Bitiş---------
+  # -------8. Soru , 13.Soru , 14. Soru , 15. Soru , 16.Soru , 17.Soru , 18.Soru Ve Ekstra olarak İnternet ve Doğalgaz Borcunuda Gösteriyor Başlangıç---------
+  elif secim == "8":
+    girilen_musteri_numarasi = input("Müşteri Numarası Giriniz: ")
+    bulundu = False
+    for musteri in musteriler:
+      if musteri["musteri_no"] == girilen_musteri_numarasi:
+        bulundu = True
+        toplam_fatura = len(musteri["faturalar"])
+        odenen_sayisi = 0
+        odenmeyen_sayisi = 0
+        toplam_borc = 0
+        
+        # Fatura türlerine göre borç değişkenleri (Telefon eklendi)
+        elektrik_borc = 0
+        su_borc = 0
+        dogalgaz_borc = 0
+        internet_borc = 0
+        telefon_borc = 0
+
+        for fatura in musteri["faturalar"]:
+          if fatura["odendi"]:
+            odenen_sayisi += 1
+          else:
+            odenmeyen_sayisi += 1
+            toplam_borc += fatura["tutar"]
+            
+            fatura_turu = (fatura["tur"].replace("İ", "i").replace("I", "ı").lower())
+            
+            if "elektrik" in fatura_turu:
+              elektrik_borc += fatura["tutar"]
+            elif "su" in fatura_turu:
+              su_borc += fatura["tutar"]
+            elif "dogal" in fatura_turu or "doğal" in fatura_turu:
+              dogalgaz_borc += fatura["tutar"]
+            elif "internet" in fatura_turu:
+              internet_borc += fatura["tutar"]
+            elif "telefon" in fatura_turu:
+              telefon_borc += fatura["tutar"]
+
+        print(f"\n--- BORÇ ÖZETİ ---")
+        print(f"Müşteri Adı: {musteri['ad']}")
+        print(f"Toplam Fatura Sayısı: {toplam_fatura}")
+        print(f"Ödenmiş Fatura Sayısı: {odenen_sayisi}")
+        print(f"Ödenmemiş Fatura Sayısı: {odenmeyen_sayisi}")
+        print(f"------------------------")
+        
+        # Sadece 0'dan büyük (borcu olan) türleri ekrana yazdır
+        borc_var_mi = False
+        if elektrik_borc > 0:
+          print(f"Ödenmemiş Elektrik Borcu: {elektrik_borc} TL")
+          borc_var_mi = True
+        if su_borc > 0:
+          print(f"Ödenmemiş Su Borcu: {su_borc} TL")
+          borc_var_mi = True
+        if dogalgaz_borc > 0:
+          print(f"Ödenmemiş Doğal Gaz Borcu: {dogalgaz_borc} TL")
+          borc_var_mi = True
+        if internet_borc > 0:
+          print(f"Ödenmemiş İnternet Borcu: {internet_borc} TL")
+          borc_var_mi = True
+        if telefon_borc > 0:
+          print(f"Ödenmemiş Telefon Borcu: {telefon_borc} TL")
+          borc_var_mi = True
+          
+        if not borc_var_mi:
+          print("Bu kategorilerde ödenmemiş borç bulunmamaktadır.")
+            
+        print(f"------------------------")
+        print(f"Genel Toplam Borç: {toplam_borc} TL")
+
+        print("\n--- 500 TL Üzeri Ödenmemiş Borçlar ---")
+        yuksek_fatura = False
+        for fatura in musteri["faturalar"]:
+          if not fatura["odendi"] and fatura["tutar"] > 500:
+            yuksek_fatura = True
+            print(
+                f"Fatura No: {fatura['fatura_no']} | Tür: {fatura['tur']} |"
+                f" Tutar: {fatura['tutar']} TL"
+            )
+        if not yuksek_fatura:
+          print("500 TL üzerinde ödenmemiş faturası bulunmamaktadır.")
+        print("-" * 30)
         break
     if not bulundu:
       print("Müşteri Bulunamadı")
-  # -------8. Soru Bitiş---------
-  # -------9. Soru Başlangıç---------
-    
-  # -------9. Soru Bitiş---------
+  # -------8. Soru , 13.Soru , 14. Soru , 15. Soru , 16.Soru , 17.Soru , 18.Soru Ve Ekstra olarak İnternet ve Doğalgaz Borcunuda Gösteriyor Bitiş---------
   # -------Çıkış Başlangıç---------
   elif secim == "0":
     print("Program sonlandırıldı.")
